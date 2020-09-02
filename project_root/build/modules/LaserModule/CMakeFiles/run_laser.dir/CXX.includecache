@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/project_root/modules/LaserModule/LaserMain.cpp
+thread
+-
+chrono
+-
+
