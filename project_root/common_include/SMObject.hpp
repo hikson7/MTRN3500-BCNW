@@ -7,40 +7,35 @@
 #pragma once
 
 #include <sys/shm.h>
-#include <sys/select.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <termios.h>
-
-#include <cstdlib>
-#include <typeinfo>
-#include <iostream>
-
 #include "SM_struct.hpp"
 
-char *flagHandle(int argc, char *argv[]);
+namespace SMObjectSpace {
+	class SMObject {
 
-class SMObject {
+		public:
+			SMObject();
+			SMObject(const char* path, char key_id, int size);
 
-	public:
-		SMObject();
-		SMObject(const char* path, char key_id, int size);
+			~SMObject();
+			void SMCreate();
+			void SMAccess();
+			/* Memory counter function */
+			void decrementMemCtr();
+		
+		private:
+			int size_;		//size of shared memory.
+			key_t key_;		//key to shared memory.
+			int shmid_;		//shared memory ID.
 
-		~SMObject();
-		void shmCreate();
-		void shmAccess();
+			/* Memory counter variables */
+			void 	*mem_ctr_;	
+			int 	mem_ctr_id_;
+			key_t 	mem_ctr_key_;
 
-		int getShmid();
-		void restoreShmid(int original_shmid);
-		void free();
-
-	private:
-		int shm_size_;		//size of shared memory.
-		key_t key_;			//key to shared memory.
-		int shmid_;			//shared memory ID.
-		bool delete_flag_;	//flag to delete shared memory upon exit.
-
-	public:
-		void *shm_data_;	//pointer to access shared memory data
+		public:
+			bool SMCreateError_;
+			bool SMAccessError_;
+			bool SMKeyPathError_;
+			void *pData_;	//pointer to access shared memory data
+	};
 };

@@ -30,8 +30,6 @@ add_executable(${PROJECT_NAME}
     ${DISPLAY}/Shape.cpp
     ${DISPLAY}/VectorMaths.cpp
     ${DISPLAY}/Vehicle.cpp
-    ${INCLUDE}
-    ${DISPLAY_INC}
 )
 
 #make sure OpenGL/GLUT is installed
