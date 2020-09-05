@@ -1,8 +1,0 @@
-/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/build/CMakeFiles/rebuild_cache.dir
-/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/build/CMakeFiles/edit_cache.dir
-/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/build/modules/module_A/CMakeFiles/rebuild_cache.dir
-/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/build/modules/module_A/CMakeFiles/edit_cache.dir
-/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/build/modules/module_A/CMakeFiles/module_A.dir
-/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/build/modules/module_B/CMakeFiles/rebuild_cache.dir
-/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/build/modules/module_B/CMakeFiles/edit_cache.dir
-/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/build/modules/module_B/CMakeFiles/module_B.dir
