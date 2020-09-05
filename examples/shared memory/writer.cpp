@@ -10,7 +10,7 @@
 constexpr char KEY_FILE_PATH[] = ".shm_key"; // Arbitary file.
 
 int main(int argc, char *argv[]) {
-    /* Same as process A to create/access shared memory */
+    /* Same as reader.cpp, create/access shared memory */
 	std::string create_file("touch ");
 	create_file.append(KEY_FILE_PATH);
 	system(create_file.c_str());
