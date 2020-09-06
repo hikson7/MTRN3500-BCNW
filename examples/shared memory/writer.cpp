@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
 	if (writer.shmAccess() < 0) {
 		writer.pError("Segment memory attach failed");
 	}
-
+	printf("Press Enter to print. To end, press 'Q' + Enter: DO NOT ctrl-C!!!\n");
     /* write data to shared memory */
 	double* data = (double*) writer.pdata_;
 	while('Q' != getchar()) {

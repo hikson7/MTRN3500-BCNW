@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
 	if (reader.shmAccess() < 0) {
 		reader.pError("Segment memory attach failed");
 	}
+	printf("Press Enter to print. To end, press 'Q' + Enter: DO NOT ctrl-C!!!\n");
 	/* read content from shared memory */
 	double* data = (double*) reader.pdata_;
 	while('Q' != getchar())
