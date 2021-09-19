@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../common_include/common.h
+
+/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/common_src/common_source_file1.cpp
+iostream
+-
+common.h
+/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/common_src/common.h
+
+/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/common_src/common_source_file2.cpp
+iostream
+-
+common.h
+/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/common_src/common.h
+
+/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/modules/module_A/mainA.cpp
+common.h
+/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/modules/module_A/common.h
+moduleA.h
+/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/modules/module_A/moduleA.h
+
+/Users/Hikari/Documents/GitHub/MTRN3500-BCNW/examples/cmake/project_root/modules/module_A/moduleA.h
+iostream
+-
+

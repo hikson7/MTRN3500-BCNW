@@ -1,39 +1,37 @@
 # Shared memory object
+
+### Shared memory object
+Shared memory object class ```SMObject``` is implemented for use in MacOS (or Linux, currently untested).
+
+#### Creating shared memory
+Initialise SMObject by calling SMObject constructor.
 ```
-class SMObject {
-
-		public:
-			SMObject();
-			SMObject(const char* path, char proj_id, int size);
-
-			~SMObject();
-			int shmCreate();
-			int shmAccess();
-			void setUniquePathID(const char* path, const char proj_id);
-			void setSize(int size);
-			
-			/* Memory counter function */
-			void decrementMemCtr();
-
-			/* Error handling */
-			void pError(const char* message);
-		
-		public:
-			int error_handle_;
-			void *pdata_;		//pointer to access shared memory data
-
-		private:
-			int size_;				//size of shared memory.
-			int shmid_;				//shared memory ID.
-			char path_[PATH_MAX];	//valid global path to a file.
-			uint8_t proj_id_;		//valid 8-bit id.
-
-			/* Memory counter variables */
-			void 	*pmem_ctr_;	
-			int 	mem_ctr_id_;
-	};
+using namespace SMObjectSpace;
+SMObject::SMObject(
+    const char* path,       // Valid path to a existing file.
+    const char proj_id,     // unique id for that shared memory segment.
+    int size                // size of shared memory.
+);
 ```
+Then create shared memory with ```shmCreate()``` and access shared memory with ```shmAccess()```.
 
+#### Error checking/ debugging
+Both ```shmCreate()``` and ```shmAccess()``` sets ```error_handle_``` to appropriate ```errno``` or custom error value. To take full advantage of custom errors, use ```pError()``` instead of standard ```perror()```.
+
+#### Note on Memory leak
+If the process/program terminates successfully (controller termination, so that destructor ```~SMObject()``` is called), it should take care of freeing or not freeing the shared memory. e.g. if another process is currently using the shared memory, it will not free the memory upon exiting of the program.
+
+This is achieved simply by keeping track of how many processes have access to the shared memory, using ```*pmem_ctr_```. Upon successful call of ```shmAccess()```, ```*pmem_ctr_``` is incremented, and upon successful call of ```~SMObject()``` (upon successful termination of a process) it will decrement the counter.
+
+You do however, need to make sure if a process terminates unexpectedly, you decrement the counter manually in your code with ```decrementMemCtr()```. 
+
+## Useful resources
+
+Detailed explanations about shared memory is presented in this (very easy to follow) website. Highly recommend to use this as your bible if you're facing some bugs from shared memory!
+
+Shared memory: http://beej.us/guide/bgipc/html/multi/shm.html#shmcreat
+
+TCP/IP: http://beej.us/guide/bgnet/html/
 
 Shared memory object class ```SMObject``` is implemented for use in MacOS (or Linux, currently untested).
 
