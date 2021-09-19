@@ -1,9 +1,8 @@
 # Shared memory object
 
-### Shared memory object
-Shared memory object class ```SMObject``` is implemented for use in MacOS (or Linux, currently untested).
+```SMObject.cpp``` and ```SMObject.hpp``` are intended to be the alternative to the sample code written for Windows. It provides similar interfaces, but uses different system calls to handle shared memory.
 
-#### Creating shared memory
+## Creating and accessing shared memory
 Initialise SMObject by calling SMObject constructor.
 ```
 using namespace SMObjectSpace;
@@ -15,66 +14,73 @@ SMObject::SMObject(
 ```
 Then create shared memory with ```shmCreate()``` and access shared memory with ```shmAccess()```.
 
-#### Error checking/ debugging
+> Note: When you want to create a shared memory, you must include an absolute path to a file (any file, but it must exist), and a byte-sized id (i.e. ```char``` variable). Under the hood, for different programs to share memory they must use the same "key" to access it. This makes sure that only desired processes have access to the memory. In essense, absolute path and the id are used together to create a unique id for the shared memory. Refer to example code for usage.
+
+## Error checking/ debugging
 Both ```shmCreate()``` and ```shmAccess()``` sets ```error_handle_``` to appropriate ```errno``` or custom error value. To take full advantage of custom errors, use ```pError()``` instead of standard ```perror()```.
 
-#### Note on Memory leak
+## Note on Memory leak
 If the process/program terminates successfully (controller termination, so that destructor ```~SMObject()``` is called), it should take care of freeing or not freeing the shared memory. e.g. if another process is currently using the shared memory, it will not free the memory upon exiting of the program.
 
 This is achieved simply by keeping track of how many processes have access to the shared memory, using ```*pmem_ctr_```. Upon successful call of ```shmAccess()```, ```*pmem_ctr_``` is incremented, and upon successful call of ```~SMObject()``` (upon successful termination of a process) it will decrement the counter.
 
-You do however, need to make sure if a process terminates unexpectedly, you decrement the counter manually in your code with ```decrementMemCtr()```. 
+You do however, need to make sure if a process terminates unexpectedly, you decrement the counter manually in your code with ```decrementMemCtr()```.
+
+## Removing leaked memory
+
+There will be times (particularly during development/debugging) shared memory doesn't get cleaned up correctly. This may be due to unexpected termination of program, or forgetting to call ```decrementMemCtr()``` appropriately.
+
+Here are useful terminal commands for shared memory.
+
+- ```ipcs```: IPC status. Checks for existing shared memory
+- ```ipcrm -M key_```: removes memory from given key
+- ```ipcrm -m ID```: removes memory from assigned ID
+
+### Usage example
+
+Let's run ```ipcs``` command.
+
+```$ ipcs```
+This will output with three sections: Message Queues, Shared Memory and Semaphores. We only care aobut Shared Memory section for now. If you haven't run any of the shared memory code yet, you should see nothing in Shared Memory section.
+
+![](assets/screenshot1.png)
+
+Now let's compile and run ```reader.cpp```
+
+```
+$ g++ reader.cpp SMObject.cpp -o reader
+$ ./reader
+```
+
+Open up another terminal, and run ```ipcs``` again (don't quit ```reader``` yet). You should now see a shared memory is now created.
+
+![](assets/screenshot2.png)
+
+> How come there are two shared memories? This is because of how ```SMObject``` class works. One of the shared memory is the one you need for your program (reader), and other shared memory is a counter to keep track of how many processes have access to it, and when to free the shared memory.
+
+Now, if you exit the ```reader``` program successfully e.g. press Q and enter, you should see the shared memory disappear when you re-run ```ipcs```. But, if you exit the ```reader``` program unsuccessfully e.g. ctrl-C, you will see those shared memory remaining -  memory leak!
+
+When this happens, you can use ```ipcrm``` manually to remove the leaked shared memory.
+
+```
+$ ipcrm -M 0x500443f1   // remove using the key
+```
+Below is equivalent to above
+```
+$ ipcrm -m 131073       // remove using the ID
+```
+Either way is fine, its really up to you.
+
+Now you should see one of the shared memory is successfully removed.
+
+![](assets/screenshot3.png)
+
+Proceed to remove the other memory as well.
 
 ## Useful resources
 
-Detailed explanations about shared memory is presented in this (very easy to follow) website. Highly recommend to use this as your bible if you're facing some bugs from shared memory!
+I highly recommend Beej's guide to shared memory and TCP!
 
 Shared memory: http://beej.us/guide/bgipc/html/multi/shm.html#shmcreat
 
 TCP/IP: http://beej.us/guide/bgnet/html/
-
-Shared memory object class ```SMObject``` is implemented for use in MacOS (or Linux, currently untested).
-
-Initialise SMObject by calling SMObject constructor.
-```
-using namespace SMObjectSpace;
-SMObject::SMObject(
-    const char* path,       // Valid path to a existing file.
-    const char proj_id,     // unique id for that shared memory segment.
-    int size                // size of shared memory.
-);
-```
-## Creating shared memory
-
-Why do we need these arguments? When we create shared memory using ```shmget()```, it requires a "unique key", and for other processes/programs to access the same shared memory space, we provide it with the same key in order to access it.
-
-### Key to Memory
-This key is totally arbitrary, and it can be any ```long``` value. For example it could something like ```key=1234```. And we simply use the same key value in another process to access shared memory.
-
-### The problem with 'arbitrary' key
-But if by chance, any other program (that you didn't design to share the memory with) happen to use the same key, they will have the access to that key. We probably don't want that!
-
-### Unique key generation
-Long story short, we need a truly unique key, and ```ftok()``` does just that. It takes a path to an existing file in your system and an arbitrary, 8-bit int i.e. ```char``` to create a unique key.
-
-## Attaching shared memory
-
-
-## Memory counter
-In case your wondering what the memory counter stuff that's included in SMObject class (like ```decrementMemCtr()```), it's actually related to keeping track of memory management and to prevent leaky memory.
-
-Basically, memory counter is incremented whenever that particular shared memory is accessed by a process, and decremented when the memory is no longer used by a process.
-
-When a program terminates, in the destructor ```~SMObject()``` it checks if the memory counter is <= 1. If it's more than 2, it means that another program is still using the shared memory; so the process simply deattaches from the memory and doesn't delete the it. If the memory counter is 1, it can safely deattach and delete, to prevent memory leak.
-
-### Unexpected termination
-All of that sounds nice and neat, but it will work memory-leak-free if and only if each process terminate successfully! If for example, you decide to interrupt and quit the program by sending all powerful ```^C``` in your terminal, the destructor won't be called. Which mean, the memory counter doesn't get decremented!
-
-Can you hear the leaky memory? When even a single program dies this way, the counter will always be greater than 1, which means the memory will never get freed by the program; unless you decrement it using ```decrementMemCtr()```!
-
-```decrementMemCtr()``` is pretty self explanatory; once called, it simply decrements the memory counter. 
-
-I'll leave it up to you to decide where and when to call this function, that's a software design decision and hopefully you'll enjoy learning about it in this course! (little hint: which module monitors all processes?)
-
-# Useful resources
-Shared memory: http://beej.us/guide/bgipc/html/multi/shm.html#shmcreat

@@ -7,7 +7,7 @@
 #include <string>
 #include "SMObject.hpp"
 
-constexpr char KEY_FILE_PATH[] = ".shm_key"; // Arbitary file.
+constexpr char KEY_FILE_PATH[] = ".shm_key";
 
 int main(int argc, char *argv[]) {
     /* Same as reader.cpp, create/access shared memory */
