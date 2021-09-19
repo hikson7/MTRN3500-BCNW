@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
     // Wait until program had started
     while (!IsProcessRunning(programName)) {}
 
-    // Infinite loop until process is no longer runnin.
+    // Infinite loop until process is no longer running.
     while (IsProcessRunning(programName)) {
         puts("I am still running");
     }
